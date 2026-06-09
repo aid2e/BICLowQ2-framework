@@ -7,10 +7,49 @@
 #    files to Ax-compliant dictionaries
 # =============================================================================
 
+from pydoc import locate
 import ast
 
 from ax.api.configs import ChoiceParameterConfig, RangeParameterConfig
 from ax.service.ax_client import ObjectiveProperties
+
+def GetStatusQuo(config):
+    """GetStatusQuo
+
+    Helper method to convert a dictionary of
+    AID2E parameter options into a dictionary
+    of the form:
+
+      {parameter_name : default_value}
+
+    Used as the'status_quo' when doing Bandit
+    Optimization.
+
+    Args:
+      config: dictionary to convert
+    Returns:
+      a dictionary of the form
+        {parameter_name : default_value}
+    """
+
+    # extract parameters
+    inPars = config["parameters"]
+
+    # iterate through parameters
+    statusQuo = dict()
+    for inParKey, inParVal in inPars.items():
+
+        # extract relevant info
+        name    = inParKey
+        default = inParVal["default"]
+        vType   = inParVal["value_type"]
+        rType   = locate(vType)
+
+        # append to dict
+        statusQuo[name] = rType(default)
+
+    # return dictionary of defaults
+    return statusQuo
 
 def ConvertParamConfig(config):
     """ConvertParamConfig
@@ -39,9 +78,9 @@ def ConvertParamConfig(config):
     for inParKey, inParVal in inPars.items():
 
         # extract relevant info
-        name   = inParKey
-        pType  = inParVal["param_type"]
-        vType  = inParVal["value_type"]
+        name  = inParKey
+        pType = inParVal["param_type"]
+        vType = inParVal["value_type"]
 
         # if needed, extra bounds
         bounds = None
@@ -106,9 +145,9 @@ def CreateParamList(config):
     for inParKey, inParVal in inPars.items():
 
         # extract relevant info
-        name   = inParKey
-        pType  = inParVal["param_type"]
-        vType  = inParVal["value_type"]
+        name  = inParKey
+        pType = inParVal["param_type"]
+        vType = inParVal["value_type"]
 
         # if needed, extra bounds
         bounds = None
