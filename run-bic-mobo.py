@@ -11,9 +11,10 @@ import json
 import os
 import pickle
 
+from ax.core import Arm
 from ax.generation_strategy.generation_node import GenerationStep
 from ax.generation_strategy.generation_strategy import GenerationStrategy
-from ax.modelbridge.registry import Generators
+from ax.modelbridge.registry import Generators, Models
 from ax.service.ax_client import AxClient
 from ax.service.utils.report_utils import exp_to_df
 from scheduler import AxScheduler, JobLibRunner, SlurmRunner
@@ -68,22 +69,46 @@ def main(*args, **kwargs):
     ax_objs, ax_obj_cons = att.ConvertObjectConfig(obj_cfg)
 
     # define generation strategy to use
-    #   - TODO try bandit optimization
-    gstrat = GenerationStrategy(
-        steps = [
-            GenerationStep(
-                model = Generators.SOBOL,
-                num_trials = exp_cfg["n_sobol"],
-                min_trials_observed = exp_cfg["min_sobol"],
-                max_parallelism = exp_cfg["max_parallel_gen"]
-            ),
-            GenerationStep(
-                model = Generators.BOTORCH_MODULAR,
-                num_trials = -1,
-                max_parallelism = exp_cfg["max_parallel_gen"]
+    gstrat = None
+    match exp_cfg['gen_strategy']:
+        case "default":
+            gstrat = GenerationStrategy(
+                steps = [
+                    GenerationStep(
+                        model = Generators.SOBOL,
+                        num_trials = exp_cfg["n_sobol"],
+                        min_trials_observed = exp_cfg["min_sobol"],
+                        max_parallelism = exp_cfg["max_parallel_gen"]
+                    ),
+                    GenerationStep(
+                        model = Generators.BOTORCH_MODULAR,
+                        num_trials = -1,
+                        max_parallelism = exp_cfg["max_parallel_gen"]
+                    )
+                ]
             )
-        ]
-    )
+            print("Using default generation strategy!")
+
+        case "bandit":
+            gstrat = GenerationStrategy(
+                steps = [
+                    GenerationStep(
+                        model = Generators.FACTORIAL,
+                        num_trials = exp_cfg["n_sobol"],  # FIXME this might need to be changed...
+                        min_trials_observed = exp_cfg["min_sobol"],  # FIXME this might need to be changed...
+                        max_parallelism = exp_cfg["max_parallel_gen"]  # FIXME this might need to be changed...
+                    ),
+                    GenerationStep(
+                        model = Generators.BOTORCH_MODULAR,
+                        num_trials = -1,
+                        max_parallelism = exp_cfg["max_parallel_gen"]
+                    )
+                ]
+            )
+            print("Using factorial generation!")
+
+        case _:
+            raise ValueError("Unknown generation strategy specified!")
 
     # either create or load ax experiment as needed
     ax_client = None
@@ -98,6 +123,10 @@ def main(*args, **kwargs):
             objectives = ax_objs,
             parameter_constraints = ax_par_cons
         )
+        if exp_cfg['gen_strategy'] == "bandit":  # FIXME Ax is complaining about having no observations in the status quo... 
+            ax_client._experiment.status_quo = Arm(
+                parameters = att.GetStatusQuo(par_cfg)
+            )
     else:
         if os.path.isfile(args.experiment):
             ax_client = AxClient().load_from_json_file(args.experiment)
