@@ -13,7 +13,6 @@ import pickle
 
 from ax.generation_strategy.generation_node import GenerationStep
 from ax.generation_strategy.generation_strategy import GenerationStrategy
-from ax.modelbridge.registry import Generators
 from ax.service.ax_client import AxClient
 from ax.service.utils.report_utils import exp_to_df
 from scheduler import AxScheduler, JobLibRunner, SlurmRunner
@@ -68,7 +67,6 @@ def main(*args, **kwargs):
     ax_objs, ax_obj_cons = att.ConvertObjectConfig(obj_cfg)
 
     # define generation strategy to use
-    #   - TODO try bandit optimization
     gstrat = GenerationStrategy(
         steps = [
             GenerationStep(
