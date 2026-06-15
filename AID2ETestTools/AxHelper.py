@@ -22,8 +22,8 @@ def GetStatusQuo(config):
 
       {parameter_name : default_value}
 
-    Used as the'status_quo' when doing Bandit
-    Optimization.
+    Can be used to get the 'status_quo' when
+    doing, e.g., Bandit Optimization.
 
     Args:
       config: dictionary to convert
