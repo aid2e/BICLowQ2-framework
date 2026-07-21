@@ -1,242 +1,32 @@
-# BIC-MOBO [Under construction]
+# BIC/LowQ2 Framework
 
-An application of the AID2E framework to the ePIC Barrel Imaging Calorimeter (BIC).
-As the BIC design is largely finalized and optimal, this exercise has three purposes:
+This is a testbed/prototype framework used in the initial versions of the
+[BIC-MOBO](https://github.com/aid2e/BIC-MOBO) and [LowQ2-MOBO](https://github.com/aid2e/LowQ2-MOBO)
+problems, and is superseded by the official [AID2E-framework](https://github.com/aid2e/AID2E-framework).
 
-  1. As a simple test of the AID2E framework to gain familiarity with the tool;
-  2. As clarification of instructions on how to start, run, and utilize the tool.
-  3. And as a demonstration of the framework, showing that it converges to a
-     reasonable answer.
-
-## Development strategy
-
-Develoment will proceeding by building this new problem from the ground-up, using
-the [dRICH-MOBO](https://github.com/aid2e/dRICH-MOBO) as reference and leveraging
-the [AID2E scheduler](https://github.com/aid2e/scheduler_epic).
-
-### Steps:
-
-- [x] Create simplified environment creation/deletion scripts
-- [x] Run optimization locally on BIC simulation using scheduler
-      with one objective, energy resolution
-- [x] Run workflow with one objective on hPC resources via
-      SLURM using scheduler
-- [x] Implement second objective, electron-pion separation
-- [ ] Run workflow with both objectives on HPC resources via
-      PANDA using scheduler
-
-### Design Goals:
-
-- Integration with [AID2E scheduler](https://github.com/aid2e/scheduler_epic);
-- Both small-scale, local tests and larger-scale, remote tests are able to
-  be run easily
-- Modified EIC software interface is:
-    1. Able to handle arbitrary numbers of subsytems to modify,
-    2. Able to be easily factorized and deployed in other problems,
-    3. Able to handle modifying reconstruction parameters (stretch
-       goal);
-    4. And can be evolved to align with ongoing work in the [holistic optimization](https://github.com/aid2e/HolisticOptimization)
-       example;
 
 ## Dependencies
 
-- Python 3.11.5
-- Conda or Mamba (eg. via [Miniforge](https://github.com/conda-forge/miniforge)) 
-- [Ax](https://ax.dev)
-- [EIC Software](https://eic.github.io)
-- [AID2E Scheduler](https://github.com/aid2e/scheduler_epic)
+- Ax 1.0.0+
+- botorch
+- Python 3.11+
+- pip
 
-## Code organization
 
-This repository is structured like so:
+## Quickstart
 
-  | File/Directory | Description |
-  |----------------|-------------|
-  | `bic-mobo.yml` | conda/mamba environment file |
-  | `create-environment` | script to create bic-mobo conda/mamba environment |
-  | `remove-environment` | script to remove bic-mobo conda/mamba environment |
-  | `run-bic-mobo.py` | wrapper script and point-of-entry to the problem |
-  | `launch-mobo` | script to launch a slurm pilot job |
-  | `configurations` | collects various configuration files that define the problem |
-  | `objectives` | collects analysis scripts to calculate objectives for optimize for |
-  | `steering` | collects steering/macro files for running simulations |
-  | `interfaces` | collects code to interface the framework with objective scripts or other external code |
-  | `examples` | collects of example config files, scripts, etc. for illustrating some of the extended functionality |
-  | `scripts` | collects various scripts useful for running, testing, etc. |
-  | `tests` | collects test scripts for unit tests |
-  | `bin` | collects scripts to set environment variables, etc. |
-  | `EICMOBOTestTools` | a python package which consolidates various tools for interfacing with the EIC software stack |
-  | `AID2ETestTools` | a python package which consolidates various tools for interfacing with Ax |
-
-There are four configuration files which define the parameters of the problem.
-
-  | File | Description |
-  |------|-------------|
-  | `run.config` | defines paths to EIC software, components, executables to be used, etc. |
-  | `problem.config` | defines metadata and parameters for optimization algorithms |
-  | `parameters.config` | defines design parameters to optimize with |
-  | `objectives.config` | defines objectives to optimize for |
-
-## Installation
-
-Before beginning, please make sure conda and/or mamba is installed. Once
-ready, the environment for the problem can be set up via:
-
-**Base installation (without PanDA/iDDS support):**
+Clone the repo:
 ```bash
-./create-environment
+git clone https://github.com/aid2e/BICLowQ2-framework
+cd BICLowQ2-framework
 ```
 
-**With PanDA/iDDS support (for distributed computing):**
+And if you haven't installed the dependencies yet:
 ```bash
-./create-environment --panda
+pip install -r requirements.txt
 ```
 
-And activated via `conda`
-```bash
-conda activate bic-mobo
+Then install with:
 ```
-
-### Adding PanDA support to an existing installation
-
-If you initially installed without PanDA support and later need it, you can add it:
-```bash
-conda activate bic-mobo
-pip install -e .[panda]
-pip install 'git+https://github.com/aid2e/scheduler_epic.git[panda]'
-```
-
-At any point, this environment can be deleted with
-```bash
-./remove-environment
-```
-
-Then, install the [AID2E scheduler](https://github.com/aid2e/scheduler_epic)
-following the instructions in its repository. Remember to configure the
-scheduler appropriately if you're going to run with SLURM, PanDA, etc.
-
-Istall the local utilities/objectives by running
-the command below in this directory:
-```bash
 pip install -e .
-```
-
-Lastly, you'll need to make sure the `eic-shell` is available on your
-machine.  You can find instructions to do so [here](https://eic.github.io/tutorial-setting-up-environment/).
-
-## Running the framework
-
-Before beginning, create a local installation of [the ePIC geometry
-description](https://github.com/eic/epic).  Note that you **DO NOT**
-need to compile it.  This will happen automatically while running.
-```bash
-cd <where-the-geo-goes>
-git clone git@github.com:eic/epic.git
-```
-
-Then, modify `configurations/run.config` so that the paths point to your
-installations and relevent scripts, eg.
-```json
-{
-    "_comment"      : "Configures runtime options, and paths to EIC software components",
-    "conda"         : "<path-to-your-script>/conda.sh",
-    "environment"   : "bic-mobo",
-    "out_path"      : "<where-the-output-goes>",
-    "run_path"      : "<where-the-running-happens>",
-    "log_path"      : "<where-the-logs-go>",
-    "eic_shell"     : "<path-to-your-script>/eic-shell",
-    "overlap_check" : "checkOverlaps",
-    "det_path"      : "<where-the-geo-goes>/epic",
-    "det_config"    : "epic",
-    "sim_exec"      : "npsim",
-    "sim_input"     : {
-        "location" : "<where-the-mobo-goes>/BIC-MOBO/steering",
-        "type"     : "gun"
-    },
-    "reco_exec"   : "eicrecon"
-    "rec_collect" : [
-        "MCParticles",
-        "GeneratedParticles",
-        "EcalBarrelScFiRawHits",
-        "EcalBarrelScFiRawHitAssociations",
-        "EcalBarrelScFiRecHits",
-        "EcalBarrelScFiClusters",
-        "EcalBarrelScFiClusterAssociations",
-        "EcalBarrelImagingRawHits",
-        "EcalBarrelImagingRawHitAssociations",
-        "EcalBarrelImagingRecHits",
-        "EcalBarrelImagingClusters",
-        "EcalBarrelImagingClusterAssociations",
-        "EcalBarrelClusters"
-    ]
-    "sched_n_jobs"        : 1,
-    "monitoring_interval" : 30
-}
-
-```
-
-Where the angle brackets should be replaced with the appropriate
-absolute paths. The values `det_path` and `det_config` should be
-what `echo $DETECTOR_PATH` and `echo $DETECTOR_CONFIG` return after
-sourcing your installation of the geometry.
-
-And finally, modify `configurations/problem.config` and
-`configurations/objectives.config` to make sure the
-Ax output is placed in the appropriate directory and the code is
-picking up the correct objective scripts, eg.
-```json
-{
-    "_comment"         : "Configures problem for Ax",
-    "name"             : "BIC Optimization",
-    "problem_name"     : "bic_mobo",
-    "OUTPUT_DIR"       : "<where-the-output-goes>"
-    "n_sobol"          : 10,
-    "min_sobol"        : 6,
-    "max_parallel_gen" : 6,
-    "n_max_trials"     : 42
-}
-```
-
-```json
-{
-    "_comment"   : "Configure objectives to optimize for",
-    "objectives" : {
-        "ElectronEnergyResolution" : {
-            "input" : "single_electron",
-            "path"  : "<where-the-mobo-goes>/BIC-MOBO/objectives",
-            "exec"  : "BICEnergyResolution.py",
-            "rule"  : "python <EXEC> -i <RECO> -o <OUTPUT> -p 11",
-            "stage" : "ana",
-            "goal"  : "minimize"
-        }
-    }
-}
-```
-
-Once appropriately configured, we need to set an environment variable
-to point to our installation via:
-```bash
-source bin/this-mobo.sh
-
-```
-Where `bin/this-mobo.sh` should be replaced by the script for your
-shell.  Note that this should only need to be done once per session.
-
-Finally, the optimization can be run locally with:
-```bash
-python run-bic-mobo.py
-```
-
-Or it can be run via Slurm using the script `launch-mobo.py`, which
-dispatches a sequence of pilot jobs.  Update the slurm options in
-`configuration/template.slurm` accordingly, and launch the job with:
-```bash
-python launch-mobo.py
-```
-
-Various analyses can be run on the optimization output with the
-script `run-analyses.py`.  After updating the appropariate paths/options
-in the script, do:
-```bash
-python run-analyses.py
 ```
