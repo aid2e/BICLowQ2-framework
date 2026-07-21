@@ -14,12 +14,12 @@ import pathlib
 import re
 import subprocess
 
-from EICMOBOTestTools import AnaGenerator
-from EICMOBOTestTools import ConfigParser
-from EICMOBOTestTools import FileManager
-from EICMOBOTestTools import GeometryEditor
-from EICMOBOTestTools import RecGenerator
-from EICMOBOTestTools import SimGenerator
+from . import AnaGenerator
+from . import ConfigParser
+from . import FileManager
+from . import GeometryEditor
+from . import RecGenerator
+from . import SimGenerator
 
 class TrialManager:
     """TrialManager
