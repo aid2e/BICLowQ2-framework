@@ -7,13 +7,18 @@
 #    of framework
 # =============================================================================
 
-import setuptools
+from setuptools import find_packages, setup
 
-setuptools.setup(
-    name     = 'bic-lowq2-framework',
-    version  = '0.0.0',
-    packages = ['BICLowQ2']
+setup(
+    name = 'bic-lowq2-framework',
+    version = '0.0.0',
+    packages = find_packages(where = "src"),
+    package_dir = {"": "src"},
+    install_requires = [
+        "ax-platform>=1.0.0",
+        "botorch",
+        "torch",
+    ],
 )
-
 
 # end =========================================================================
