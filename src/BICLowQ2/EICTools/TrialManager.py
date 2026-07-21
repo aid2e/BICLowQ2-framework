@@ -329,13 +329,21 @@ class TrialManager:
         for anaKey, anaOut in outFiles.items():
             anaPath = pathlib.Path(anaOut)
             anaJson = anaPath.with_suffix('.json')
-            with open(anaJson, 'r+') as anaj:
-                anaDat = json.load(anaj)
-                if process.returncode == 9:
-                    anaDat[anaKey] = self.anaGen.GetDummyValue(anaKey)
-                outDat = anaDat | param
-                anaj.seek(0)
-                json.dump(outDat, anaj)
+            if os.path.exists(anaJson):
+                with open(anaJson, 'r+') as anaj:
+                    anaDat = json.load(anaj)
+                    if process.returncode == 9:
+                        anaDat[anaKey] = self.anaGen.GetDummyValue(anaKey)
+                    outDat = anaDat | param
+                    anaj.seek(0)
+                    json.dump(outDat, anaj)
+            else:
+                with open(anaJson, 'w') as anaj:
+                    anaDat = {}
+                    if process.returncode == 9:
+                        anaDat[anaKey] = self.anaGen.GetDummyValue(anaKey)
+                    outDat = anaDat | param
+                    json.dump(outDat, anaj)
 
         # return relevant output files
         return outFiles
