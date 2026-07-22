@@ -1,0 +1,4 @@
+# Core Ax and optimization dependencies
+ax-platform==1.0.0
+botorch
+torch

@@ -1,26 +1,24 @@
 # =============================================================================
 ## @file   setup.py
 #  @author Derek Anderson
-#  @date   10.09.2025
+#  @date   07.21.2026
 # -----------------------------------------------------------------------------
-## @brief Setup script for easy installation of
-#    utilities and objectives
+## @brief Setup script for easy installation
+#    of framework
 # =============================================================================
 
-import setuptools
+from setuptools import find_packages, setup
 
-setuptools.setup(
-    name     = 'bic-mobo',
-    version  = '0.0.0',
-    packages = ['EICMOBOTestTools', 'AID2ETestTools', 'objectives', 'interfaces'],
-    extras_require = {
-        'panda': [
-            'idds-client',
-            'idds-common',
-            'idds-workflow',
-            'panda-client',
-        ]
-    }
+setup(
+    name = 'bic-lowq2-framework',
+    version = '0.0.0',
+    packages = find_packages(where = "src"),
+    package_dir = {"": "src"},
+    install_requires = [
+        "ax-platform>=1.0.0",
+        "botorch",
+        "torch",
+    ],
 )
 
 # end =========================================================================

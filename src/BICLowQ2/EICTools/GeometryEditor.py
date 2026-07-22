@@ -16,8 +16,8 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
-from EICMOBOTestTools import ConfigParser
-from EICMOBOTestTools import FileManager
+from . import ConfigParser
+from . import FileManager
 
 class GeometryEditor:
     """GeometryEditor

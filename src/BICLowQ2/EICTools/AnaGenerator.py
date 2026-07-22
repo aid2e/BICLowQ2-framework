@@ -11,8 +11,8 @@ import os
 import stat
 import sys
 
-from EICMOBOTestTools import ConfigParser
-from EICMOBOTestTools import FileManager
+from . import ConfigParser
+from . import FileManager
 
 class AnaGenerator:
     """AnaGenerator

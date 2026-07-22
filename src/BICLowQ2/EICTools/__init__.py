@@ -1,5 +1,5 @@
 """
-EIC MOBO Tools (Test ver.)
+EIC Tools (Test ver.)
 
 A testbed library for AID2E tools to
 simplify interfacing with the EIC

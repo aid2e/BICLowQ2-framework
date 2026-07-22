@@ -10,8 +10,8 @@
 import os
 import pathlib
 
-from EICMOBOTestTools import ConfigParser
-from EICMOBOTestTools import FileManager
+from . import ConfigParser
+from . import FileManager
 
 class SimGenerator:
     """SimGenerator
