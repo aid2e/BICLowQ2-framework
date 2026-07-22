@@ -104,33 +104,4 @@ def MakeThisMoboScripts(path: str) -> None:
     os.chmod(zplace, 0o777)
     print(f"Created this-mobo scripts at {place}")
 
-def CreateEnvironment(config: str, name: str) -> None:
-    """CreateEnvironment
-
-    Creates a conda/mamba environment based
-    on the provided yaml file.
-
-    Args:
-      config: yaml configuration file
-      name:   name of environment
-    """
-    # create environment
-    print(f"Creating environment based on {config}...")
-    subprocess.run(f"conda env create -f {config}")
-
-    # announce completion
-    print("\nEnvironment created successfully!")
-    print(f"To activate: conda activate {name}")
-
-def RemoveEnvironment(name: str) -> None:
-    """RemoveEnvironment
-
-    Removes a conda/mamba environment with
-    the provided name.
-
-    Args:
-      name: name of environment to remove
-    """
-    subprocess.run(f"conda remove -n {name} --all")
-
 # end =========================================================================
