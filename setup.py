@@ -15,7 +15,7 @@ setup(
     packages = find_packages(where = "src"),
     package_dir = {"": "src"},
     install_requires = [
-        "ax-platform>=1.0.0",
+        "ax-platform==1.0.0",
         "botorch",
         "torch",
     ],

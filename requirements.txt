@@ -1,4 +1,3 @@
-# Core Ax and optimization dependencies
-ax-platform==1.0.0
-botorch
-torch
+# Install dependencies from ./setup.py and package
+# in editable mode
+-e .
