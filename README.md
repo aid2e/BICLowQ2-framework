@@ -21,11 +21,6 @@ git clone https://github.com/aid2e/BICLowQ2-framework
 cd BICLowQ2-framework
 ```
 
-And if you haven't installed the dependencies yet:
-```bash
-pip install -r requirements.txt
-```
-
 Then install with:
 ```
 pip install -e .
