@@ -89,6 +89,8 @@ def ParseArguments() -> ap.Namespace:
     the filled Namespace.
 
     Supported args:
+      -b: run in brute (manual sampling) mode
+      -w: run in waves of jobs
       -r: specify runner
       -x: specify experiment to load
       -u: specify a run config to use
@@ -101,6 +103,8 @@ def ParseArguments() -> ap.Namespace:
       argparse.Namespace object with attributes.
     """
     parser = ap.ArgumentParser()
+    parser.add_argument("-b", "--brute", help = "Manually sample design space", action = 'store_true')
+    parser.add_argument("-w", "--waves", help = "Run in waves of jobs", action = 'store_true')
     parser.add_argument("-r", "--runner", help = "Runner type", nargs = '?', const = 1, type = str, default = "joblib")
     parser.add_argument("-x", "--experiment", help = "JSON-serialized Ax experiment to load", nargs = '?', const = 1, type = str, default = None)
     parser.add_argument("-u", "--runconfig", help = "JSON config file for runtime options to use", nargs = '?', const = 1, type = str, default = None)
