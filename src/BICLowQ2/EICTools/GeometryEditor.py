@@ -16,8 +16,8 @@ import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
-from . import ConfigParser
-from . import FileManager
+from BICLowQ2.EICTools import ConfigParser
+from BICLowQ2.EICTools import FileManager
 
 class GeometryEditor:
     """GeometryEditor

@@ -11,8 +11,8 @@ import os
 import stat
 import sys
 
-from . import ConfigParser
-from . import FileManager
+from BICLowQ2.EICTools import ConfigParser
+from BICLowQ2.EICTools import FileManager
 
 class AnaGenerator:
     """AnaGenerator
