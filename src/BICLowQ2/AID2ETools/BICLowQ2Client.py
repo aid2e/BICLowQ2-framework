@@ -7,6 +7,7 @@
 #    etc. for an optimization.
 # =============================================================================
 
+from pprint import PrettyPrinter
 import json
 import math
 import os
@@ -260,7 +261,7 @@ class BICLowQ2Client:
                     raise RuntimeError(f"Error while submitting wave {iwave}: return code {output.returncode}")
                 else:
                     prevexp = wave_exp
-                    prevjob = GetJobID(output.stdout.strip())
+                    prevjob = self._GetJobID(output.stdout.strip())
 
     def Run(self):
         """Run single monitoring job
@@ -363,7 +364,8 @@ class BICLowQ2Client:
 
         # run and report best parameters
         best = scheduler.run_optimization(max_trials = exp_cfg["n_max_trials"])
-        print(f"Optimization complete! Best parameters:\n  {best}")
+        print(f"Optimization complete! Best parameters:")
+        PrettyPrinter(sort_dicts=False).pprint(best)
 
         # create paths to output files
         oPathBase = exp_cfg["OUTPUT_DIR"] + "/" + exp_cfg["problem_name"]
