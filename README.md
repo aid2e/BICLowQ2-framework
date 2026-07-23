@@ -15,13 +15,19 @@ problems, and is superseded by the official [AID2E-framework](https://github.com
 
 ## Quickstart
 
-Clone the repo:
+Install the framework:
 ```bash
-git clone https://github.com/aid2e/BICLowQ2-framework
-cd BICLowQ2-framework
+# if using a python virtual environment
+python -m venv .venv
+source .venv/bin/activate
+pip install git+https://github.com/aid2e/BICLowQ2-framework.git
+
+# if using conda/mamba
+conda create -n myenv python=3.11 pip
+conda activate myenv
+pip install git+https://github.com/aid2e/BICLowQ2-framework.git
 ```
 
-Then install with:
-```
-pip install -e .
-```
+Then see [BIC-MOBO](https://github.com/aid2e/BIC-MOBO) or
+[LowQ2-MOBO](https://github.com/aid2e/LowQ2-MOBO) for example
+usage.
