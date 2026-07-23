@@ -39,13 +39,13 @@ def MakeThisMoboScripts(path: str) -> None:
     # sh script body
     sh = '#!/bin/sh\n' \
          'path_to_this=$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)\n' \
-         'export BIC_MOBO=$(dirname -- "$path_to_this")\n' \
-         'export OBJ_CFG=$BIC_MOBO/configuration/objectives.config\n' \
-         'export PAR_CFG=$BIC_MOBO/configuration/parameters.config\n' \
-         'export EXP_CFG=$BIC_MOBO/configuration/problem.config\n' \
-         'export RUN_CFG=$BIC_MOBO/configuration/run.config\n' \
-         'export SLM_TMP=$BIC_MOBO/configuration/template.slurm\n' \
-         'export ENV_SCR=$BIC_MOBO/bin/this-mobo.sh'
+         'export THIS_MOBO=$(dirname -- "$path_to_this")\n' \
+         'export OBJ_CFG=$THIS_MOBO/configuration/objectives.config\n' \
+         'export PAR_CFG=$THIS_MOBO/configuration/parameters.config\n' \
+         'export EXP_CFG=$THIS_MOBO/configuration/problem.config\n' \
+         'export RUN_CFG=$THIS_MOBO/configuration/run.config\n' \
+         'export SLM_TMP=$THIS_MOBO/configuration/template.slurm\n' \
+         'export ENV_SCR=$THIS_MOBO/bin/this-mobo.sh'
 
     # tcsh script body
     tcsh = '#!/bin/tcsh\n' \
@@ -67,13 +67,13 @@ def MakeThisMoboScripts(path: str) -> None:
     zsh = '#!/bin/zsh\n' \
           'set -f\n' \
           'path_to_this="${(%):-%N}"\n' \
-          'export BIC_MOBO="${path_to_this:A:h:h}"\n' \
-          'export OBJ_CFG=$BIC_MOBO/configurations/objectives.config\n' \
-          'export PAR_CFG=$BIC_MOBO/configuration/parameters.config\n' \
-          'export EXP_CFG=$BIC_MOBO/configuration/problem.config\n' \
-          'export RUN_CFG=$BIC_MOBO/configuration/run.config\n' \
-          'export SLM_TMP=$BIC_MOBO/configuration/template.slurm\n' \
-          'export ENV_SCR=$BIC_MOBO/bin/this-mobo.sh'
+          'export THIS_MOBO="${path_to_this:A:h:h}"\n' \
+          'export OBJ_CFG=$THIS_MOBO/configurations/objectives.config\n' \
+          'export PAR_CFG=$THIS_MOBO/configuration/parameters.config\n' \
+          'export EXP_CFG=$THIS_MOBO/configuration/problem.config\n' \
+          'export RUN_CFG=$THIS_MOBO/configuration/run.config\n' \
+          'export SLM_TMP=$THIS_MOBO/configuration/template.slurm\n' \
+          'export ENV_SCR=$THIS_MOBO/bin/this-mobo.sh'
 
     # create bin directory if it doesn't exist
     place = f"{path}/bin"
