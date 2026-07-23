@@ -12,7 +12,7 @@ import argparse as ap
 import os
 import subprocess
 
-import BICLowQ2.EICTools
+from BICLowQ2.EICTools import ReadJsonFile
 
 
 def GetConfigPath(config: str) -> str:
@@ -63,7 +63,7 @@ def LoadConfig(config: str) -> Dict[str, Any]:
       Loaded config file as a dictionary
     """
     path = GetConfigPath(config)
-    data = EICTools.ReadJsonFile(path)
+    data = ReadJsonFile(path)
     return data
 
 
@@ -103,8 +103,8 @@ def ParseArguments() -> ap.Namespace:
       argparse.Namespace object with attributes.
     """
     parser = ap.ArgumentParser()
-    parser.add_argument("--brute", help = "Manually sample design space", action = 'store_true')
-    parser.add_argument("--waves", help = "Run in waves of jobs", action = 'store_true')
+    parser.add_argument("-b", "--brute", help = "Manually sample design space", action = 'store_true')
+    parser.add_argument("-w", "--waves", help = "Run in waves of jobs", action = 'store_true')
     parser.add_argument("-r", "--runner", help = "Runner type", nargs = '?', const = 1, type = str, default = "joblib")
     parser.add_argument("-x", "--experiment", help = "JSON-serialized Ax experiment to load", nargs = '?', const = 1, type = str, default = None)
     parser.add_argument("-u", "--runconfig", help = "JSON config file for runtime options to use", nargs = '?', const = 1, type = str, default = None)

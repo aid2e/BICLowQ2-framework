@@ -23,7 +23,7 @@ from ax.service.ax_client import AxClient
 from ax.service.utils.report_utils import exp_to_df
 from scheduler import AxScheduler, JobLibRunner, SlurmRunner
 
-from BICLowQ2.AID2ETools import OptionParser
+from BICLowQ2.AID2ETools import ConvertParamConfig, ConvertObjectConfig, OptionParser
 
 class BICLowQ2Client:
     """AID2EClient
@@ -280,8 +280,8 @@ class BICLowQ2Client:
 
         # translate parameter, objective options
         # into ax-compliant ones
-        ax_pars, ax_par_cons = at.ConvertParamConfig(par_cfg)
-        ax_objs, ax_obj_cons = at.ConvertObjectConfig(obj_cfg)
+        ax_pars, ax_par_cons = ConvertParamConfig(par_cfg)
+        ax_objs, ax_obj_cons = ConvertObjectConfig(obj_cfg)
 
         # define generation strategy to use
         #   --> if none provided when initializing client,
@@ -359,11 +359,11 @@ class BICLowQ2Client:
                 'monitoring_interval' : run_cfg["monitoring_interval"],
             }
         )
-        scheduler.set_objective_function(OptionParser.RunObjectives)
+        scheduler.set_objective_function(self.objective)
 
         # run and report best parameters
         best = scheduler.run_optimization(max_trials = exp_cfg["n_max_trials"])
-        print(f"Optimization complete! Best parameters:\n", best)
+        print(f"Optimization complete! Best parameters:\n  {best}")
 
         # create paths to output files
         oPathBase = exp_cfg["OUTPUT_DIR"] + "/" + exp_cfg["problem_name"]
