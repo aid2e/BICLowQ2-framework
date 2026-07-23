@@ -14,12 +14,12 @@ import pathlib
 import re
 import subprocess
 
-from . import AnaGenerator
-from . import ConfigParser
-from . import FileManager
-from . import GeometryEditor
-from . import RecGenerator
-from . import SimGenerator
+from BICLowQ2.EICTools import AnaGenerator
+from BICLowQ2.EICTools import ConfigParser
+from BICLowQ2.EICTools import FileManager
+from BICLowQ2.EICTools import GeometryEditor
+from BICLowQ2.EICTools import RecGenerator
+from BICLowQ2.EICTools import SimGenerator
 
 class TrialManager:
     """TrialManager
@@ -62,8 +62,6 @@ class TrialManager:
        time = re.sub(r'[.\-:\ ]', '', time)
        tag = f"AID2ETrial{time}"
        return tag
-    
-
 
     def __DoGeometryEdits(self, params):
         """DoGeometryEdits
