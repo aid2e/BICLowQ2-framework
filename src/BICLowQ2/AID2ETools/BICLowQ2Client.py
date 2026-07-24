@@ -32,11 +32,13 @@ class BICLowQ2Client:
     A class to handle running, options, etc. for an
     optimization. Key functionality:
 
-    Run   -- run an optimization with a single monitoring job
-    Waves -- run optimization over several waves of jobs with
-             a sequence of monitoring jobs
-    Brute -- run trial/objective function on provided list
-             of design points
+    Run    -- run optimization
+    Launch -- run optimization via slurm with a single
+              monitoring job
+    Waves  -- run optimization via slurm over several
+              waves of jobs with a sequence of monitoring jobs
+    Brute  -- run trial/objective function on provided list
+              of design points via slurm
 
     Note that custom Ax generation strategies can be
     used by provided it as an argument during initialization.
@@ -186,8 +188,8 @@ class BICLowQ2Client:
         Note:
           The user needs to provide a path to the file which
           calls BICLowQ2Client.Run()! The client will create
-          submission scripts which attempt to run
-              >>> python the_file.py <arguments>
+          submission scripts which will attempt to run
+              >>> python <the file>.py <arguments>
 
         Args:
           main: file which calls BICLowQ2Client.Run()
@@ -240,9 +242,11 @@ class BICLowQ2Client:
 
                 # write command
                 if iwave > 0:
-                    script.write(f"\npython {main} -r slurm -e {wave_exp} -u {wave_run} -x {prev_exp}")
+                    other_args = OptionParser.GetArgsAsString(self.args, {"experiment", "expconfig", "runconfig"})
+                    script.write(f"\npython {main} -r slurm -e {wave_exp} -u {wave_run} -x {prev_exp} {other_args}")
                 else:
-                    script.write(f"\npython {main} -r slurm -e {wave_exp} -u {wave_run}")
+                    other_args = OptionParser.GetArgsAsString(self.args, {"expconfig", "runconfig"})
+                    script.write(f"\npython {main} -r slurm -e {wave_exp} -u {wave_run} {other_args}")
 
             # make script executable
             os.chmod(slpath, 0o777)
@@ -262,6 +266,53 @@ class BICLowQ2Client:
             else:
                 prevexp = wave_exp
                 prevjob = self._GetJobID(output.stdout.strip())
+
+    def Launch(self, main):
+        """Run in a single job
+
+        Run MOBO in a single job via slurm.
+
+        Note:
+          The user needs to provide a path to the file which
+          calls BICLowQ2Client.Run()! The client will create
+          a submission script which will attempt to run
+              >>> python <the file>.py <arguments>
+
+        Args:
+          main: file which calls BICLowQ2Client.Run()
+        """
+
+        # load relevant config
+        run_cfg = OptionParser.LoadConfig('run')
+
+        # set output & error logs
+        out = f"--output={run_cfg['log_path']}/pilot.out"
+        err = f"--error={run_cfg['log_path']}/pilot.err"
+
+        # copy slurm template to wave directory
+        slpath = run_cfg['run_path'] + f"/pilot.sh"
+        shutil.copyfile(OptionParser.GetSlurmTemplate(), slpath)
+
+        # append additional commands to slurm script
+        with open(slpath, 'a') as script:
+
+            # add output/error options
+            script.write(f"#SBATCH {out}\n")
+            script.write(f"#SBATCH {err}\n")
+
+            # write command
+            other_args = OptionParser.GetArgsAsString(self.arguments)
+            script.write(f"\npython {main} -r slurm {other_args}")
+
+        # make script executable
+        os.chmod(slpath, 0o777)
+
+        # submit job
+        output = subprocess.run(['sbatch', f'{slpath}'], capture_output = True, text = True)
+
+        # throw error if something went wrong
+        if output.returncode != 0:
+            raise RuntimeError(f"Error while submitting job: return code {output.returncode}")
 
     def Run(self):
         """Run single monitoring job

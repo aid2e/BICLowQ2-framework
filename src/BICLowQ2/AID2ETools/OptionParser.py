@@ -90,6 +90,7 @@ def ParseArguments() -> ap.Namespace:
 
     Supported args:
       -b: run in brute (manual sampling) mode
+      -l: run in a single job
       -w: run in waves of jobs
       -r: specify runner
       -x: specify experiment to load
@@ -104,6 +105,7 @@ def ParseArguments() -> ap.Namespace:
     """
     parser = ap.ArgumentParser()
     parser.add_argument("-b", "--brute", help = "Manually sample design space", action = 'store_true')
+    parser.add_argument("-l", "--launch", help = "Run in a single job", action = 'store_true')
     parser.add_argument("-w", "--waves", help = "Run in waves of jobs", action = 'store_true')
     parser.add_argument("-r", "--runner", help = "Runner type", nargs = '?', const = 1, type = str, default = "joblib")
     parser.add_argument("-x", "--experiment", help = "JSON-serialized Ax experiment to load", nargs = '?', const = 1, type = str, default = None)
@@ -135,6 +137,31 @@ def ParseArguments() -> ap.Namespace:
         subprocess.run(f"source {mobo_this}", shell = True)
 
     return args
+
+
+def GetArgsAsString(args, skip = None) -> str:
+    """Get arguments as a string
+
+    Args:
+      args: argparse.Namespace object
+      skip: set of arguments to exclude (default is none)
+    Returns:
+      all parsed args except b(rute), l(aunch), w(aves)
+      and any passed in skip as a string
+    """
+    stargs = ""
+    for arg, val in vars(args).items():
+        if arg == "brute":
+            continue
+        if arg == "launch":
+            continue
+        if arg == "waves":
+            continue
+        if skip is not None and arg in skip:
+            continue
+        if val is not None:
+            stargs += f"--{arg} {val} "
+    return stargs
 
 
 def GetMoboPath() -> str:
