@@ -91,10 +91,11 @@ def GetNewName(name, tag, ext = ".xml"):
     """
     newSuffix = "_aid2e_" + tag + ext
     newName   = name
-    if  ext == "":
-        newName = name + newSuffix
-    else:
-        newName = name.replace(ext, newSuffix)
+    if tag != "":
+        if  ext == "":
+            newName = name + newSuffix
+        else:
+            newName = name.replace(ext, newSuffix)
     return newName
 
 def GetSuffix(stage, analysis = ""):

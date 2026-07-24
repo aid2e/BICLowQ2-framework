@@ -78,8 +78,9 @@ class TrialManager:
             if cfg["stage"] != "sim":
                 continue
             else:
-                self.geoEdit.EditCompact(cfg, value, self.tag)
-                self.geoEdit.EditRelatedFiles(cfg, self.tag)
+                # NOTE no tag provided to make sure files
+                # are edited in place 
+                self.geoEdit.EditCompact(cfg, value, "")
 
     def __SetRecoArgs(self, params):
         """SetRecoArgs
@@ -125,7 +126,9 @@ class TrialManager:
         # config with compacts updated
         if self.cfgRun["det_config"] == "epic":
             commands.append(
-                self.geoEdit.MakeConfigCopyCommand(self.tag)
+                # NOTE: no tag provided to make sure correct
+                # config file is copied 
+                self.geoEdit.MakeConfigCopyCommand("")
             )
 
         # create commands to set detector path, config
@@ -133,7 +136,7 @@ class TrialManager:
             FileManager.MakeDetSetCommands(
                 self.geoEdit.detPath,
                 self.cfgRun["det_config"],
-                self.tag
+                "" # NOTE: not tag provided to make sure correct config is set
             )
         )
 

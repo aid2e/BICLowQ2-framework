@@ -56,8 +56,11 @@ class GeometryEditor:
         # extract path and create relevant name
         oldCompact = self.detPath + "/" + param["compact"]
         newCompact = oldCompact
-        if not oldCompact.endswith(tag + ".xml"):
-            newCompact = FileManager.GetNewName(oldCompact, tag)
+
+        # if no tag is provided, edit compact files in place
+        if tag != "":
+            if not oldCompact.endswith(tag + ".xml"):
+                newCompact = FileManager.GetNewName(oldCompact, tag)
 
         # if new compact does not exist, create it
         if not os.path.exists(newCompact):
@@ -66,7 +69,7 @@ class GeometryEditor:
         # and return path
         return newCompact
 
-    def __GetConfig(self, tag):
+    def __GetConfig(self, tag = ""):
         """GetConfig
 
         Checks if the configuration file associated
@@ -83,8 +86,11 @@ class GeometryEditor:
         install   = self.detPath + "/install/share/epic/"
         oldConfig = install + self.cfgRun["det_config"] + ".xml"
         newConfig = oldConfig
-        if not oldConfig.endswith(tag + ".xml"):
-            newConfig = FileManager.GetNewName(oldConfig, tag)
+
+        # if no tag is provided, edit config files in place
+        if tag != "":
+            if not oldConfig.endswith(tag + ".xml"):
+                newConfig = FileManager.GetNewName(oldConfig, tag)
 
         # if new config does not exist, create it
         if not os.path.exists(newConfig):
@@ -108,10 +114,12 @@ class GeometryEditor:
           path to the file with tag
         """
 
-        # create relevant name
+        # create relevant name, if no tag is provided
+        # just use old name
         newFile = file
-        if not file.endswith(tag + ext):
-            newFile = FileManager.GetNewName(file, tag, ext)
+        if tag != "":
+            if not file.endswith(tag + ext):
+                newFile = FileManager.GetNewName(file, tag, ext)
 
         # if new file does not exist, create it
         if not os.path.exists(newFile):
