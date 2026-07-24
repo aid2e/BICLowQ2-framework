@@ -244,24 +244,24 @@ class BICLowQ2Client:
                 else:
                     script.write(f"\npython {main} -r slurm -e {wave_exp} -u {wave_run}")
 
-                # make script executable
-                os.chmod(slpath, 0o777)
+            # make script executable
+            os.chmod(slpath, 0o777)
 
-                # submit job and make it dependent on
-                # previous wave completing
-                output = None
-                if iwave > 0:
-                    output = subprocess.run(['sbatch', f'--dependency=afterok:{prevjob}', f'{slpath}'], capture_output = True, text = True)
-                else:
-                    output = subprocess.run(['sbatch', f'{slpath}'], capture_output = True, text = True)
+            # submit job and make it dependent on
+            # previous wave completing
+            output = None
+            if iwave > 0:
+                output = subprocess.run(['sbatch', f'--dependency=afterok:{prevjob}', f'{slpath}'], capture_output = True, text = True)
+            else:
+                output = subprocess.run(['sbatch', f'{slpath}'], capture_output = True, text = True)
 
-                # throw error if something went wrong, otherwise extract
-                # job id and store experiment config for next wave
-                if output.returncode != 0:
-                    raise RuntimeError(f"Error while submitting wave {iwave}: return code {output.returncode}")
-                else:
-                    prevexp = wave_exp
-                    prevjob = self._GetJobID(output.stdout.strip())
+            # throw error if something went wrong, otherwise extract
+            # job id and store experiment config for next wave
+            if output.returncode != 0:
+                raise RuntimeError(f"Error while submitting wave {iwave}: return code {output.returncode}")
+            else:
+                prevexp = wave_exp
+                prevjob = self._GetJobID(output.stdout.strip())
 
     def Run(self):
         """Run single monitoring job
@@ -413,12 +413,15 @@ class BICLowQ2Client:
           params: a list of parameterizations to run
         """
 
+        # load relevant config
+        run_cfg= OptionParser.LoadConfig('run')
+
         # create and run a Slurm job for each parameterization
         itrial = 0
         for param in params:
 
             # create trial tag and argument
-            tag    = f"BrutTrial{itrial}"
+            tag    = f"BruteTrial{itrial}"
             tagarg = f"--tag {tag}"
 
             # set ouput & error logs
@@ -427,7 +430,7 @@ class BICLowQ2Client:
 
             # copy slurm template to run directory
             slpath = run_cfg["run_path"] + f"/Run{tag}.sh"
-            shutil.copyfile(itf.GetSlurmTemplate(), slpath)
+            shutil.copyfile(OptionParser.GetSlurmTemplate(), slpath)
 
             # append additional commands to slurm script
             with open(slpath, 'a') as script:
