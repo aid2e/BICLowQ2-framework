@@ -147,7 +147,7 @@ def GetArgsAsString(args, skip = None) -> str:
       skip: set of arguments to exclude (default is none)
     Returns:
       all parsed args except b(rute), l(aunch), w(aves)
-      and any passed in skip as a string
+      r(unner), and any passed in skip as a string
     """
     stargs = ""
     for arg, val in vars(args).items():
@@ -156,6 +156,8 @@ def GetArgsAsString(args, skip = None) -> str:
         if arg == "launch":
             continue
         if arg == "waves":
+            continue
+        if arg == "runner":
             continue
         if skip is not None and arg in skip:
             continue
