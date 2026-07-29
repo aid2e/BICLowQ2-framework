@@ -242,10 +242,10 @@ class BICLowQ2Client:
 
                 # write command
                 if iwave > 0:
-                    other_args = OptionParser.GetArgsAsString(self.args, {"experiment", "expconfig", "runconfig"})
+                    other_args = OptionParser.GetArgsAsString(self.arguments, {"experiment", "expconfig", "runconfig"})
                     script.write(f"\npython {main} -r slurm -e {wave_exp} -u {wave_run} -x {prev_exp} {other_args}")
                 else:
-                    other_args = OptionParser.GetArgsAsString(self.args, {"expconfig", "runconfig"})
+                    other_args = OptionParser.GetArgsAsString(self.arguments, {"expconfig", "runconfig"})
                     script.write(f"\npython {main} -r slurm -e {wave_exp} -u {wave_run} {other_args}")
 
             # make script executable
