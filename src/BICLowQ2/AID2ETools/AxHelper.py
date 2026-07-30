@@ -188,7 +188,7 @@ def CreateParamList(config):
     # if any constraints are provided,
     # pass them onto Ax
     outCons = None
-    if inCons:
+    if len(inCons) > 0:
         outCons = inCons
 
     # return list of parameters
