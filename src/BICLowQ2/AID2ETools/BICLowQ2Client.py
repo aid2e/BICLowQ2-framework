@@ -369,7 +369,8 @@ class BICLowQ2Client:
                 name = exp_cfg["problem_name"],
                 parameters = ax_pars,
                 objectives = ax_objs,
-                parameter_constraints = ax_par_cons
+                parameter_constraints = ax_par_cons,
+                outcome_constraints = ax_obj_cons,
             )
         else:
             if os.path.isfile(self.arguments.experiment):
