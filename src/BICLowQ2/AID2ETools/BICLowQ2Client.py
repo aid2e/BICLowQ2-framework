@@ -444,7 +444,7 @@ class BICLowQ2Client:
             pickle.dump(gen.model, file)
 
 
-    def Brute(self, params):
+    def Brute(self, params, objective):
         """Run specific parameterizations
 
         Alternative method to run MOBO. Eschews Ax to instead manually
@@ -462,7 +462,8 @@ class BICLowQ2Client:
           as detailed in BICLowQ2.AID2ETools.OptionParser.
 
         Args:
-          params: a list of parameterizations to run
+          params:    a list of parameterizations to run
+          objective: path to the file where `RunObjectives` is defined
         """
 
         # load relevant config
@@ -474,7 +475,7 @@ class BICLowQ2Client:
 
             # create trial tag and argument
             tag    = f"BruteTrial{itrial}"
-            tagarg = f"--tag {tag}"
+            tagarg = f"tag=\"{tag}\""
 
             # set ouput & error logs
             out = f"--output={run_cfg['log_path']}/{tag}.out"
@@ -494,11 +495,22 @@ class BICLowQ2Client:
                 # construct arguments for objective runner
                 kwargs = f"{tagarg}"
                 for parkey, parval in param.items():
-                    kwargs += f" --{parkey} {parval}"
+                    kwargs += f", {parkey}={parval}"
+
+                # split up path to file with RunObjectives
+                opath = pathlib.Path(objective)
+                ostem = opath.stem
+
+                # make command to import RunObjectives from file
+                # and run them
+                runcomm = f"\npython -c \'" \
+                          "from importlib.machinery import SourceFileLoader;" \
+                          f"run = SourceFileLoader(\"{ostem}\", \"{objective}\").load_module();" \
+                          f"run.RunObjectives({kwargs})\'"
 
                 # now add line to run objective runner
                 # with arguments
-                script.write(f"\npython {obj_run} {kwargs}")
+                script.write(f"{runcomm}")
         
             # make script executable and submit it
             os.chmod(slpath, 0o777)
