@@ -54,6 +54,17 @@ class RecGenerator:
         """
         self.argParams.clear()
 
+    def CombineOpts(self):
+        """CombineOpts
+
+        Combine list of options specified
+        in rec_opts into a single string.
+        """
+        opts = ""
+        if "rec_opts" in self.cfgRun:
+            opts = ' '.join(self.cfgRun["rec_opts"])
+        return opts
+
     def AddParamToArgs(self, param, value):
         """AddParamToArgs
 
@@ -140,8 +151,13 @@ class RecGenerator:
         outArg  = "-Ppodio:output_file=" + outDir + "/" + outFile
         collArg = "-Ppodio:output_collections=" + collects
 
+        # construct other arguments
+        optArg = self.CombineOpts()
+
         # construct most of command
         command = self.cfgRun["rec_exec"] + " " + outArg + " " + collArg
+        if optArg != "":
+            command = command + " " + optArg
         for param, value in self.argParams.items():
             command = command + " -P" + param + "=\"" + value + "\""
 

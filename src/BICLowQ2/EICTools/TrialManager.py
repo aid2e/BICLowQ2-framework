@@ -85,7 +85,8 @@ class TrialManager:
     def __SetRecoArgs(self, params):
         """SetRecoArgs
 
-        Set updated reconstruction arguments.
+        Set updated reconstruction arguments for
+        design parameters.
 
         Args:
           params: dictionary of parameter names and current values (eg. from Ax)
