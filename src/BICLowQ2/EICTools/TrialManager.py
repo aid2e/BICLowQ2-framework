@@ -199,6 +199,7 @@ class TrialManager:
                     self.recGen.MakeCommand(
                         self.tag,
                         inKey,
+                        inLoc,
                         inSteer
                     )
                 )

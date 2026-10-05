@@ -112,7 +112,7 @@ class RecGenerator:
         # save updated/new arg
         self.argParams[path] = argVal
 
-    def MakeCommand(self, tag, label, steer):
+    def MakeCommand(self, tag, label, path, steer):
         """MakeCommand
 
         Generates command to run reconstruction
@@ -122,6 +122,7 @@ class RecGenerator:
         Args:
           tag:   the tag associated with the current trial
           label: the label associated with the input
+          path:  the path to the input steering file
           steer: the input steering file
         Returns:
           command to be run
@@ -136,6 +137,15 @@ class RecGenerator:
         # exists for trial
         outDir = self.cfgRun["out_path"] + "/" + tag
         FileManager.MakeDir(outDir)
+
+        # if a jana config file for the steering
+        # file exists, create arguments to load
+        # and dump parameters
+        dumpFile    = steer.replace(".py", ".conf")
+        configFile  = steer.replace(".py", ".toml")
+        hasConfig   = os.path.exists(path + "/" + configFile)
+        loadCommand = f"-l {path + '/' + configFile}"
+        dumpCommand = f"-d {outDir + '/' + dumpFile}"
 
         # construct list of collections to make
         icollect = 0
@@ -160,6 +170,10 @@ class RecGenerator:
             command = command + " " + optArg
         for param, value in self.argParams.items():
             command = command + " -P" + param + "=\"" + value + "\""
+
+        # add load/dump commands if needed
+        if hasConfig:
+            command = command + " " + loadCommand + " " + dumpCommand
 
         # return command with input file attached
         command = command + " " + outDir + "/" + inFile
