@@ -139,13 +139,10 @@ class RecGenerator:
         FileManager.MakeDir(outDir)
 
         # if a jana config file for the steering
-        # file exists, create arguments to load
-        # and dump parameters
-        dumpFile    = steer.replace(".py", ".conf")
+        # file exists, create arguments to load it
         configFile  = steer.replace(".py", ".toml")
         hasConfig   = os.path.exists(path + "/" + configFile)
         loadCommand = f"-l {path + '/' + configFile}"
-        dumpCommand = f"-d {outDir + '/' + dumpFile}"
 
         # construct list of collections to make
         icollect = 0
@@ -171,9 +168,9 @@ class RecGenerator:
         for param, value in self.argParams.items():
             command = command + " -P" + param + "=\"" + value + "\""
 
-        # add load/dump commands if needed
+        # add load command if needed
         if hasConfig:
-            command = command + " " + loadCommand + " " + dumpCommand
+            command = command + " " + loadCommand
 
         # return command with input file attached
         command = command + " " + outDir + "/" + inFile
