@@ -54,6 +54,17 @@ class RecGenerator:
         """
         self.argParams.clear()
 
+    def CombineOpts(self):
+        """CombineOpts
+
+        Combine list of options specified
+        in rec_opts into a single string.
+        """
+        opts = ""
+        if "rec_opts" in self.cfgRun:
+            opts = ' '.join(self.cfgRun["rec_opts"])
+        return opts
+
     def AddParamToArgs(self, param, value):
         """AddParamToArgs
 
@@ -101,7 +112,7 @@ class RecGenerator:
         # save updated/new arg
         self.argParams[path] = argVal
 
-    def MakeCommand(self, tag, label, steer):
+    def MakeCommand(self, tag, label, path, steer):
         """MakeCommand
 
         Generates command to run reconstruction
@@ -111,6 +122,7 @@ class RecGenerator:
         Args:
           tag:   the tag associated with the current trial
           label: the label associated with the input
+          path:  the path to the input steering file
           steer: the input steering file
         Returns:
           command to be run
@@ -126,6 +138,12 @@ class RecGenerator:
         outDir = self.cfgRun["out_path"] + "/" + tag
         FileManager.MakeDir(outDir)
 
+        # if a jana config file for the steering
+        # file exists, create arguments to load it
+        configFile  = steer.replace(".py", ".toml")
+        hasConfig   = os.path.exists(path + "/" + configFile)
+        loadCommand = f"-l {path + '/' + configFile}"
+
         # construct list of collections to make
         icollect = 0
         collects = ""
@@ -140,10 +158,21 @@ class RecGenerator:
         outArg  = "-Ppodio:output_file=" + outDir + "/" + outFile
         collArg = "-Ppodio:output_collections=" + collects
 
+        # construct other arguments
+        optArg = self.CombineOpts()
+
         # construct most of command
-        command = self.cfgRun["rec_exec"] + " " + outArg + " " + collArg
+        command = self.cfgRun["rec_exec"] + " " + outArg
+        if collArg != "":
+            command = command + " " + collArg
+        if optArg != "":
+            command = command + " " + optArg
         for param, value in self.argParams.items():
             command = command + " -P" + param + "=\"" + value + "\""
+
+        # add load command if needed
+        if hasConfig:
+            command = command + " " + loadCommand
 
         # return command with input file attached
         command = command + " " + outDir + "/" + inFile
