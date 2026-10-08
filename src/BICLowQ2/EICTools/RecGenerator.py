@@ -162,7 +162,9 @@ class RecGenerator:
         optArg = self.CombineOpts()
 
         # construct most of command
-        command = self.cfgRun["rec_exec"] + " " + outArg + " " + collArg
+        command = self.cfgRun["rec_exec"] + " " + outArg
+        if collArg != "":
+            command = command + " " + collArg
         if optArg != "":
             command = command + " " + optArg
         for param, value in self.argParams.items():
